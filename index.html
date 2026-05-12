@@ -29,7 +29,7 @@
     <!-- SCREEN 2: MAIN DASHBOARD -->
     <div id="mainApp" class="hidden max-w-2xl mx-auto space-y-6 pb-10">
         <div class="flex justify-between items-center py-4">
-            <h2 class="text-2xl font-bold neon-blue italic">WAN 2.2 ULTIMATE</h2>
+            <h2 class="text-2xl font-bold neon-blue italic text-indigo-400">WAN 2.2 ULTIMATE</h2>
             <button onclick="location.reload()" class="bg-red-900/40 text-red-400 px-4 py-2 rounded-xl text-xs font-bold border border-red-800">LOGOUT</button>
         </div>
 
@@ -73,16 +73,6 @@
                     <input type="range" id="strength" min="0.5" max="1.0" step="0.01" value="0.92" 
                            class="w-full" oninput="document.getElementById('strengthVal').textContent=this.value">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="fps" class="bg-black border border-slate-700 rounded-xl p-3 text-sm outline-none">
-                        <option value="30">30 FPS</option>
-                        <option value="60" selected>60 FPS</option>
-                    </select>
-                    <select id="resolution" class="bg-black border border-slate-700 rounded-xl p-3 text-sm outline-none">
-                        <option value="720">HD 720p</option>
-                        <option value="1080" selected>Full HD</option>
-                    </select>
-                </div>
             </div>
         </div>
 
@@ -99,12 +89,14 @@
 
         const PIN_BENAR = "250405"; 
         
+        // Memperbaiki akses fungsi ke cakupan Global (window)
         window.checkPin = () => {
-            if (document.getElementById('pinInput').value === PIN_BENAR) {
+            const val = document.getElementById('pinInput').value;
+            if (val === PIN_BENAR) {
                 document.getElementById('pinScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
             } else {
-                alert("Akses Ditolak!");
+                alert("PIN Salah!");
                 document.getElementById('pinInput').value = "";
             }
         };
@@ -142,14 +134,10 @@
             document.getElementById('mainBtn').disabled = true;
 
             try {
-                // Koneksi asli ke Gradio Space
-                // Menggunakan model Wan 2.1 Image-to-Video / Face Swap logic
                 const client = await Client.connect("Wan-Video/Wan2.1-I2V-14B-480P", { hf_token: token });
-                
                 document.getElementById('statusMsg').innerText = "Uploading to Cloud...";
                 document.getElementById('pBar').style.width = "40%";
 
-                // Panggil fungsi prediksi asli
                 const result = await client.predict("/predict", {
                     input_image: face,
                     input_video: video,
@@ -165,18 +153,20 @@
                         <i class="fa-solid fa-circle-check"></i> PROYEK SELESAI
                     </h3>
                     <video controls class="w-full rounded-2xl shadow-lg" src="${videoUrl}"></video>
-                    <p class="text-[10px] text-slate-500 mt-2 text-center">Video diputar dari CDN Cloud. Memori HP Aman.</p>
                 `;
 
             } catch (err) {
                 console.error(err);
-                resultBox.innerHTML = `<p class="text-red-500 text-xs italic">Gagal: ${err.message}. Cek Token atau Status Space.</p>`;
+                resultBox.innerHTML = `<p class="text-red-500 text-xs italic">Gagal: ${err.message}</p>`;
             }
             document.getElementById('mainBtn').disabled = false;
         };
 
-        document.getElementById('pinInput').addEventListener('keypress', e => { if (e.key === 'Enter') window.checkPin(); });
+        // Memastikan tombol Enter juga bekerja
+        document.getElementById('pinInput').addEventListener('keypress', e => { 
+            if (e.key === 'Enter') window.checkPin(); 
+        });
     </script>
 </body>
-            </html>
-            
+    </html>
+    
