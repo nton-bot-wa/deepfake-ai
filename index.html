@@ -3,174 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTON PRIVATE AI - Wan 2.2 Ultimate</title>
+    <title>NTON AI LAB - Private Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #020617; }
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(24px); border: 1px solid rgba(120, 60, 255, 0.4); }
-        .neon-blue { text-shadow: 0 0 25px #6366f1; }
-        .preview { max-height: 240px; border-radius: 16px; object-fit: cover; }
-        input[type="range"] { accent-color: #8b5cf6; }
+        body { background-color: #020617; color: #f8fafc; font-family: sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        input { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; }
     </style>
 </head>
-<body class="min-h-screen text-slate-100 p-4">
+<body class="min-h-screen p-4 flex flex-col items-center">
 
-    <!-- SCREEN 1: LOGIN PIN -->
-    <div id="pinScreen" class="glass max-w-sm mx-auto mt-20 p-10 rounded-3xl text-center shadow-2xl">
-        <i class="fa-solid fa-robot text-6xl text-indigo-500 mb-6"></i>
-        <h1 class="text-3xl font-bold">NTON PRIVATE AI</h1>
-        <p class="text-indigo-400 text-sm">Authorized Access Only</p>
-        <input type="password" id="pinInput" maxlength="6" inputmode="numeric" placeholder="••••••"
-               class="w-full mt-10 bg-black border-2 border-indigo-600 rounded-2xl p-4 text-4xl text-center tracking-widest focus:outline-none text-white">
-        <button onclick="auth()" class="w-full mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 p-4 rounded-2xl font-bold hover:opacity-90 transition">MASUK</button>
+    <!-- BAGIAN 1: SISTEM PIN (PENGUNCI) -->
+    <div id="layarPin" class="glass mt-20 p-8 rounded-3xl w-full max-w-sm text-center shadow-2xl">
+        <h1 class="text-2xl font-bold text-indigo-400 mb-2">Akses Terkunci</h1>
+        <p class="text-slate-400 text-sm mb-6">Masukkan PIN Keamanan Anda</p>
+        <input type="password" id="inputPin" maxlength="6" inputmode="numeric" placeholder="••••••"
+               class="w-full p-4 rounded-xl text-center text-3xl tracking-widest outline-none focus:border-indigo-500 mb-6">
+        <button onclick="bukaAkses()" class="w-full bg-indigo-600 p-4 rounded-xl font-bold hover:bg-indigo-700 active:scale-95 transition">MASUK</button>
     </div>
 
-    <!-- SCREEN 2: MAIN DASHBOARD -->
-    <div id="mainApp" class="hidden max-w-2xl mx-auto space-y-6 pb-10">
+    <!-- BAGIAN 2: DASHBOARD UTAMA (TERSEMBUNYI) -->
+    <div id="layarUtama" class="hidden w-full max-w-lg space-y-6">
         <div class="flex justify-between items-center py-4">
-            <h2 class="text-2xl font-bold neon-blue italic text-indigo-400">WAN 2.2 ULTIMATE</h2>
-            <button onclick="location.reload()" class="bg-red-900/40 text-red-400 px-4 py-2 rounded-xl text-xs font-bold border border-red-800">LOGOUT</button>
+            <h2 class="text-xl font-bold text-indigo-400 italic">NTON AI ENGINE v2.2</h2>
+            <button onclick="location.reload()" class="text-xs bg-red-900/30 text-red-400 p-2 rounded-lg">KELUAR</button>
         </div>
 
-        <div class="glass p-4 rounded-2xl">
-            <label class="block text-xs text-slate-400 mb-2 italic">Konfigurasi Cloud API:</label>
-            <input type="password" id="hfToken" placeholder="Masukkan Hugging Face Token (hf_...)" 
-                   class="w-full p-4 bg-black border border-slate-700 rounded-xl text-sm focus:border-indigo-500 outline-none text-white">
+        <!-- INPUT TOKEN -->
+        <div class="glass p-5 rounded-2xl">
+            <label class="block text-xs text-slate-400 mb-2 uppercase tracking-wider">Hugging Face API Token:</label>
+            <input type="password" id="hfToken" placeholder="hf_xxxxxxxxxxxx" 
+                   class="w-full p-3 rounded-lg text-sm outline-none">
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="glass p-5 rounded-3xl text-center">
-                <label class="block text-sm mb-3 font-semibold">1. Wajah Target (Foto)</label>
-                <input type="file" id="faceImg" accept="image/*" class="hidden" onchange="window.previewFile('faceImg', 'facePreview')">
-                <div onclick="document.getElementById('faceImg').click()" class="cursor-pointer w-full h-40 border-2 border-dashed border-indigo-500/50 rounded-2xl flex flex-col items-center justify-center hover:bg-indigo-500/10 transition">
-                    <i class="fa-solid fa-camera text-2xl mb-2 text-indigo-400"></i>
-                    <span class="text-xs">Unggah Wajah</span>
-                </div>
-                <img id="facePreview" class="preview mt-3 hidden w-full">
+        <!-- UPLOAD FILES -->
+        <div class="grid grid-cols-1 gap-4">
+            <div class="glass p-5 rounded-2xl">
+                <label class="block text-sm font-semibold mb-3">Target Wajah (Foto):</label>
+                <input type="file" id="pilihFoto" accept="image/*" class="w-full text-xs" onchange="previewData('pilihFoto', 'viewFoto')">
+                <img id="viewFoto" class="mt-3 hidden rounded-xl max-h-48 w-full object-cover">
             </div>
-            <div class="glass p-5 rounded-3xl text-center">
-                <label class="block text-sm mb-3 font-semibold">2. Gerakan (Video)</label>
-                <input type="file" id="videoSrc" accept="video/*" class="hidden" onchange="window.previewFile('videoSrc', 'videoPreview')">
-                <div onclick="document.getElementById('videoSrc').click()" class="cursor-pointer w-full h-40 border-2 border-dashed border-indigo-500/50 rounded-2xl flex flex-col items-center justify-center hover:bg-indigo-500/10 transition">
-                    <i class="fa-solid fa-video text-2xl mb-2 text-indigo-400"></i>
-                    <span class="text-xs">Unggah Gerakan</span>
-                </div>
-                <video id="videoPreview" controls class="preview mt-3 hidden w-full"></video>
+
+            <div class="glass p-5 rounded-2xl">
+                <label class="block text-sm font-semibold mb-3">Gerakan Video (Source):</label>
+                <input type="file" id="pilihVideo" accept="video/*" class="w-full text-xs" onchange="previewData('pilihVideo', 'viewVideo')">
+                <video id="viewVideo" controls class="mt-3 hidden rounded-xl w-full"></video>
             </div>
         </div>
 
-        <div class="glass p-6 rounded-3xl">
-            <h3 class="font-bold text-purple-400 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-sliders"></i> ENGINE CONFIG
-            </h3>
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between text-xs mb-2 text-slate-400">
-                        <span>Face Similarity Strength</span>
-                        <span id="strengthVal" class="text-indigo-400 font-mono">0.92</span>
-                    </div>
-                    <input type="range" id="strength" min="0.5" max="1.0" step="0.01" value="0.92" 
-                           class="w-full" oninput="document.getElementById('strengthVal').textContent=this.value">
-                </div>
-            </div>
-        </div>
-
-        <button id="mainBtn" onclick="window.startRender()" 
-                class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-5 rounded-3xl font-bold text-lg shadow-xl active:scale-95 transition">
-            <i class="fa-solid fa-bolt mr-2"></i> EXECUTE DEEP RENDER
+        <!-- TOMBOL EKSEKUSI ASLI -->
+        <button id="btnRender" onclick="prosesAI()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 p-5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition">
+            MULAI RENDER WAJAH
         </button>
 
-        <div id="resultArea" class="space-y-4"></div>
+        <!-- AREA HASIL -->
+        <div id="statusRender" class="hidden glass p-6 rounded-2xl border-l-4 border-indigo-500">
+            <div class="flex items-center gap-4">
+                <div class="animate-spin h-5 w-5 border-2 border-indigo-400 border-t-transparent rounded-full"></div>
+                <span id="pesanStatus" class="text-sm font-medium">Menghubungkan ke GPU...</span>
+            </div>
+        </div>
+
+        <div id="hasilRender" class="hidden glass p-4 rounded-2xl">
+            <h3 class="text-green-400 font-bold text-sm mb-3">PROYEK SELESAI:</h3>
+            <video id="videoHasil" controls class="w-full rounded-xl shadow-inner"></video>
+        </div>
     </div>
 
-    <!-- SCRIPT LOGIN (Non-Module agar instan) -->
-    <script>
-        function auth() {
-            const pin = document.getElementById('pinInput').value;
-            if (pin === "250405") {
-                document.getElementById('pinScreen').style.display = 'none';
-                document.getElementById('mainApp').classList.remove('hidden');
-            } else {
-                alert("PIN Salah!");
-                document.getElementById('pinInput').value = "";
-            }
-        }
-        // Support Enter Key
-        document.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter' && !document.getElementById('pinScreen').classList.contains('hidden')) {
-                auth();
-            }
-        });
-    </script>
-
-    <!-- SCRIPT ENGINE (Module untuk Gradio) -->
+    <!-- LOGIKA JAVASCRIPT (ANTI-PAJANGAN) -->
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@0.1.4/dist/index.min.js";
 
-        window.previewFile = (inputId, previewId) => {
+        // 1. Fungsi PIN (Dipaksa Global)
+        window.bukaAkses = function() {
+            const pin = document.getElementById('inputPin').value;
+            if (pin === "250405") { // PIN Tanggal Lahir Tuan Anton
+                document.getElementById('layarPin').style.display = 'none';
+                document.getElementById('layarUtama').classList.remove('hidden');
+            } else {
+                alert("PIN Salah!");
+                document.getElementById('inputPin').value = "";
+            }
+        };
+
+        // 2. Fungsi Preview
+        window.previewData = function(inputId, viewId) {
             const file = document.getElementById(inputId).files[0];
             if (file) {
-                const url = URL.createObjectURL(file);
-                const el = document.getElementById(previewId);
-                el.src = url;
+                const el = document.getElementById(viewId);
+                el.src = URL.createObjectURL(file);
                 el.classList.remove('hidden');
             }
         };
 
-        window.startRender = async () => {
+        // 3. Fungsi Render Asli (Terhubung ke Cloud)
+        window.prosesAI = async function() {
             const token = document.getElementById('hfToken').value.trim();
-            const face = document.getElementById('faceImg').files[0];
-            const video = document.getElementById('videoSrc').files[0];
-            
-            if (!token) return alert("API Token Kosong!");
-            if (!face || !video) return alert("Pilih foto wajah dan video gerakan!");
+            const foto = document.getElementById('pilihFoto').files[0];
+            const video = document.getElementById('pilihVideo').files[0];
 
-            const resultArea = document.getElementById('resultArea');
-            const resultBox = document.createElement('div');
-            resultBox.className = "glass p-6 rounded-3xl border-l-4 border-indigo-500 mt-4";
-            resultBox.innerHTML = `
-                <div class="flex items-center gap-3 text-indigo-400 mb-3">
-                    <div class="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
-                    <span id="statusMsg" class="font-bold text-xs uppercase tracking-widest">Connecting to GPU...</span>
-                </div>
-                <div class="h-1 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="pBar" class="h-full bg-indigo-500 w-0 transition-all duration-1000"></div>
-                </div>
-            `;
-            resultArea.prepend(resultBox);
-            document.getElementById('mainBtn').disabled = true;
+            if (!token || !foto || !video) return alert("Lengkapi Token, Foto, dan Video!");
+
+            // Update UI
+            document.getElementById('statusRender').classList.remove('hidden');
+            document.getElementById('btnRender').disabled = true;
+            document.getElementById('btnRender').style.opacity = "0.5";
 
             try {
-                // Menggunakan Space yang aktif untuk Face Swap/Deepfake
+                // Koneksi ke Mesin AI asli di Hugging Face
                 const client = await Client.connect("Gradio-Official/Face-Swap", { hf_token: token });
                 
-                document.getElementById('statusMsg').innerText = "Processing Deep Render...";
-                document.getElementById('pBar').style.width = "60%";
+                document.getElementById('pesanStatus').innerText = "GPU sedang merender wajah Anda...";
 
+                // Mengirim data asli untuk diproses
                 const result = await client.predict("/predict", {
-                    target_image: face,
+                    target_image: foto,
                     source_video: video,
                 });
 
-                document.getElementById('pBar').style.width = "100%";
-                document.getElementById('statusMsg').innerText = "Success!";
-
-                const videoUrl = result.data[0].url;
-                resultBox.innerHTML = `
-                    <h3 class="text-green-400 font-bold mb-3 flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-circle-check"></i> PROYEK SELESAI
-                    </h3>
-                    <video controls class="w-full rounded-2xl shadow-lg" src="${videoUrl}"></video>
-                `;
+                // Tampilkan Hasil
+                document.getElementById('statusRender').classList.add('hidden');
+                document.getElementById('hasilRender').classList.remove('hidden');
+                document.getElementById('videoHasil').src = result.data[0].url;
 
             } catch (err) {
-                console.error(err);
-                resultBox.innerHTML = `<p class="text-red-500 text-xs italic font-bold">Gagal: ${err.message}</p>`;
+                alert("Gagal: " + err.message);
+                document.getElementById('statusRender').classList.add('hidden');
             }
-            document.getElementById('mainBtn').disabled = false;
+            document.getElementById('btnRender').disabled = false;
+            document.getElementById('btnRender').style.opacity = "1";
         };
     </script>
 </body>
-            </html>
-            
+</html>
